@@ -1,6 +1,6 @@
 package com.demo.concurrent.example.syncContainer;
 
-import com.demo.concurrent.annoations.ThreadSafe;
+import com.demo.concurrent.annoations.NotThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Vector;
@@ -10,7 +10,7 @@ import java.util.Vector;
  * @description Vector 线程同步.但并发时可能会出现异常
  */
 @Slf4j
-@ThreadSafe
+@NotThreadSafe
 public class VectorExample2 {
 
     private static Vector<Integer> vector = new Vector<>();
