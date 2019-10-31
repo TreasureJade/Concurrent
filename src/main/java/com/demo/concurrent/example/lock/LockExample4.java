@@ -5,7 +5,7 @@ import java.util.concurrent.locks.StampedLock;
 /**
  * @author hobo
  * @description https://www.jianshu.com/p/21839c0d2835
- *              JUC StampedLock 用法
+ *
  */
 public class LockExample4 {
     class Point {
