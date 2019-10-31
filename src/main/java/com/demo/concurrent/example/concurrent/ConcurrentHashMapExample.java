@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 
 /**
  * @author hobo
- * @description 验证ConcurrentHashMap 线程安全
+ * @description 验证ConcurrentSkipListMap 线程安全
  */
 @Slf4j
 @ThreadSafe
@@ -21,7 +21,7 @@ public class ConcurrentHashMapExample {
     // 同时并发执行的线程数
     public static int threadTotal = 50;
 
-    private static Map<Integer,Integer> map = new ConcurrentHashMap<>();
+    private static Map<Integer,Integer> map = new ConcurrentSkipListMap<>();
 
 
     public static void main(String[] args) throws Exception{
