@@ -30,6 +30,7 @@ public class CyclicBarrierExample1 {
                 }
             });
         }
+        executorService.shutdown();
     }
 
     private static void race(int threadNum) throws Exception {
