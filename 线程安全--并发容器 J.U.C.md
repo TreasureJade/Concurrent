@@ -74,3 +74,105 @@
            - 提供能够中断等待锁的线程的机制，lock.lockInterruptibly(){使线程避免进入内核态};     
    - Condition
    - FutureTask
+     [FutureTask、Runnable、CallAble、Future](https://blog.csdn.net/sinat_39634657/article/details/81456810)
+       - df：一个可取消的异步计算FutureTask,提供了对Future的基本实现，可以调用方法去开始和取消一个计算，可以查询计算是否完成并且获取计算结果。只有当计算完成时才能获取到计算结果，一旦计算完成，计算将不能被重启或者被取消，除非调用runAndReset方法。
+       - **Runnable**: 只有一个run()函数，用于将耗时操作写在其中，该函数**没有返回值**。然后某个线程去执行该runnable即可实现多线程，Thread类在调用start()函数后执行的就是Runnable的run()函数
+       ```java
+        public interface Runnable{
+         /**
+          *  java.lang.Thread run() 
+          */
+         public abstract void run();
+        }
+       ```
+       - **CallAble:** Callable中有一个call()函数，但是call()函数有返回值，而Runnable的run()函数不能将结果返回给客户程序.
+      
+       ```java
+        // 泛型接口
+        public interface Callable<V> {
+             /**
+              * 返回一个结果。或者在未执行时抛出一个异常
+              *
+              * @return 返回客户程序传递进来的V类型
+              * @throws Exception if unable to compute a result
+              */
+              V call() throws Exception;
+        }
+        ``` 
+       
+      - **Future:** Future设计模式的核心思想是异步调用。其理念应该跟ajax差不多，就是希望在等一个耗时比较长的操作的期间，做其他操作，然后其他操作做完了，回来再处理这个耗时长的操作的结果。这样业务完成的效率高一些。
+                    
+          ![Future流程图](https://img-blog.csdn.net/20180913105940244?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L291eXVud2Vu/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+          
+          main方法一开始就请求了数据，但是这时FutureClient返回的是一个FutureData对象。简单解释下：FutureData跟RealData都是Data接口的实现类，因此都有相同的方法，只是FutureData里面不包含真正的数据，等RealData来填充。main方法深知现在拿到的Data对象其实是不包含具体的数据的，而且这个具体的数据要等一段时间才有。因此main方法继续去做其他事情。而与此同时，futureClient默默地开了一个线程，去获取真正的Data对象，并且填充到FutureData对象里。 
+          main方法完成其他事情了，回头过来再取上面的FutureData数据时，其实这个时候FutureData已经填充好了真正的Data数据了，FutureData就直接调RealData的相应的方法，把结果直接转发回给main方法。 
+          这样，通过这个设计，main方法在等待数据的同时，也把其他事情先做完了。这样，main方法完成任务的时间将会缩短一些。
+          
+          ```java
+            public interface Future<V> {
+             
+                /**
+                 * 取消此任务的执行。如果任务已经完成，已经取消，或者由于其他原因无法取消，则此尝试将失败。
+                 * 如果成功，并且在调用cancel时此任务尚未启动，则此任务不应运行。
+                 * 如果任务已经启动，那么mayInterruptIfRunning参数确定执行此任务的线程是否应该被中断，以尝试停止该任务。
+                 */
+                boolean cancel(boolean mayInterruptIfRunning);
+             
+                /**
+                 * 如果此任务在正常完成之前被取消，则返回true。
+                 */
+                boolean isCancelled();
+             
+                /**
+                 * 如果任务完成，返回true。
+                 */
+                boolean isDone();
+             
+                /**
+                 * 必要时等待计算完成，然后检索其结果。
+                 *
+                 * @return the computed result
+                 */
+                V get() throws InterruptedException, ExecutionException;
+             
+                /**
+                 * 如果需要，将等待最多给定的时间以完成计算，然后检索其结果(如果可用)。
+                 *
+                 * @param timeout the maximum time to wait
+                 * @param unit the time unit of the timeout argument
+                 * @return the computed result
+                 */
+                V get(long timeout, TimeUnit unit)
+                    throws InterruptedException, ExecutionException, TimeoutException;
+            }
+            
+          ```
+          FutureTask实现Runnable，所以能通过Thread包装执行，
+          
+          FutureTask实现Runnable，所以能通过提交给ExcecuteService来执行
+          
+          注：ExecuteService：创建线程池实例对象，其中有submit（Runnable）、submit（Callable）方法
+          
+         [ExecuteService介绍](https://blog.csdn.net/suifeng3051/article/details/49443835)
+          
+          还可以直接通过get()函数获取执行结果，该函数会阻塞，直到结果返回。
+          
+          因此FutureTask是Future也是Runnable，又是包装了的Callable( 如果是Runnable最终也会被转换为Callable )。
+      
+      - **Callable 和 Future接口的区别**    
+           1. Callable规定的方法是call()，而Runnable规定的方法是run(). 
+            
+           2. Callable的任务执行后可返回值，而Runnable的任务是不能返回值的。  
+           3. call()方法可抛出异常，而run()方法是不能抛出异常的。 
+           4. 运行Callable任务可拿到一个Future对象， Future表示异步计算的结果。 
+           5. 它提供了检查计算是否完成的方法，以等待计算的完成，并检索计算的结果。 
+           6. 通过Future对象可了解任务执行情况，可取消任务的执行，还可获取任务执行的结果。 
+           7. Callable是类似于Runnable的接口，实现Callable接口的类和实现Runnable的类都是可被其它线程执行的任务。
+           
+   - Fork/Join 框架
+     
+      [Fork/Join 框架介绍](https://www.cnblogs.com/senlinyang/p/7885964.html)
+      
+   - BlockingQueue
+     
+      [BLockingQueue 介绍](https://www.jianshu.com/p/7b2f1fa616c6)
