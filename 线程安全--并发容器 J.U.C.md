@@ -38,7 +38,7 @@
    
 3. AQS同步组件
    - CountDownLatch 通过一个B树来控制线程是否需要一直阻塞
-     ![](CountDownLatch.png)
+     ![](pic/CountDownLatch.png)
      
      [CountDownLatch使用场景及分析](https://blog.csdn.net/liyuguanguan/article/details/85621359)
      
@@ -46,7 +46,7 @@
      
      - 常用于有限资源的访问
    - CyclicBarrier: 跟CountDownLatch相似（通过计数器实现）
-     ![](CyckucBarrier.png)
+     ![](pic/CyckucBarrier.png)
      - 允许一组线程相互等待，直到达到某个通过的屏障点，只有所有进程都到达后，才能进行下面的操作 
      - 使用场景：可以用于多线程计算数据，最后合并计算结果
    - ReentrantLock与锁 
